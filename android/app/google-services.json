@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "474244312874",
+    "project_id": "crmplus-a6c7f",
+    "storage_bucket": "crmplus-a6c7f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474244312874:android:d99116d866de6eb42bf853",
+        "android_client_info": {
+          "package_name": "com.ria"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOYlzyIqI5i6hvfwLVhDSZ1_6UyCU_TwY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

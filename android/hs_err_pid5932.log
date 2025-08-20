@@ -1,0 +1,218 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 1048576 bytes. Error detail: AllocateHeap
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   This process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Unscaled Compressed Oops mode in which the Java heap is
+#     placed in the first 4GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 4GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (allocation.cpp:44), pid=5932, tid=688
+#
+# JRE version:  (17.0.12+7) (build )
+# Java VM: OpenJDK 64-Bit Server VM (17.0.12+7-LTS, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Xmx64m -Xms64m -Dorg.gradle.appname=gradlew org.gradle.wrapper.GradleWrapperMain app:installDebug -PreactNativeDevServerPort=8081
+
+Host: Intel(R) Core(TM) i5-7300U CPU @ 2.60GHz, 4 cores, 11G,  Windows 10 , 64 bit Build 19041 (10.0.19041.5915)
+Time: Sun Aug  3 21:54:41 2025 Pakistan Standard Time elapsed time: 0.015499 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000015cc1c50570):  JavaThread "Unknown thread" [_thread_in_vm, id=688, stack(0x00000028c0000000,0x00000028c0100000)]
+
+Stack: [0x00000028c0000000,0x00000028c0100000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x686d99]
+V  [jvm.dll+0x83daf8]
+V  [jvm.dll+0x83f5a3]
+V  [jvm.dll+0x83fc13]
+V  [jvm.dll+0x2492ef]
+V  [jvm.dll+0xa7793]
+V  [jvm.dll+0x2dd657]
+V  [jvm.dll+0x80fa6f]
+V  [jvm.dll+0x370241]
+V  [jvm.dll+0x7ee6bf]
+V  [jvm.dll+0x3f6ccf]
+V  [jvm.dll+0x3f87f1]
+C  [jli.dll+0x5284]
+C  [ucrtbase.dll+0x21bb2]
+C  [KERNEL32.DLL+0x17374]
+C  [ntdll.dll+0x4cc91]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ff8e7a3cf98, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+
+=>0x0000015cc1c50570 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=688, stack(0x00000028c0000000,0x00000028c0100000)]
+
+Threads with active compile tasks:
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap address: 0x0000000000000000, size: 0 MB, Compressed Oops mode: 32-bit
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+<Empty>
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (1 events):
+Event: 0.008 Loaded shared library C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\java.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes loaded (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff732f10000 - 0x00007ff732f1e000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\java.exe
+0x00007ff97bab0000 - 0x00007ff97bca8000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ff97b250000 - 0x00007ff97b312000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ff979510000 - 0x00007ff979806000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ff979140000 - 0x00007ff979240000 	C:\Windows\System32\ucrtbase.dll
+0x00007ff94dea0000 - 0x00007ff94debd000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\VCRUNTIME140.dll
+0x00007ff94de80000 - 0x00007ff94de97000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\jli.dll
+0x00007ff97a070000 - 0x00007ff97a20d000 	C:\Windows\System32\USER32.dll
+0x00007ff966040000 - 0x00007ff9662da000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.5915_none_60b4b9d171f9c7c7\COMCTL32.dll
+0x00007ff9798f0000 - 0x00007ff979912000 	C:\Windows\System32\win32u.dll
+0x00007ff979c00000 - 0x00007ff979c9e000 	C:\Windows\System32\msvcrt.dll
+0x00007ff97a540000 - 0x00007ff97a56b000 	C:\Windows\System32\GDI32.dll
+0x00007ff979240000 - 0x00007ff979359000 	C:\Windows\System32\gdi32full.dll
+0x00007ff979a30000 - 0x00007ff979acd000 	C:\Windows\System32\msvcp_win.dll
+0x00007ff97a510000 - 0x00007ff97a53f000 	C:\Windows\System32\IMM32.DLL
+0x00007ff973b00000 - 0x00007ff973b0c000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\vcruntime140_1.dll
+0x00007ff9405e0000 - 0x00007ff94066d000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\msvcp140.dll
+0x00007ff8e6f00000 - 0x00007ff8e7b70000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\server\jvm.dll
+0x00007ff979f50000 - 0x00007ff97a001000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ff979eb0000 - 0x00007ff979f4f000 	C:\Windows\System32\sechost.dll
+0x00007ff979ca0000 - 0x00007ff979dc3000 	C:\Windows\System32\RPCRT4.dll
+0x00007ff979810000 - 0x00007ff979837000 	C:\Windows\System32\bcrypt.dll
+0x00007ff97b7a0000 - 0x00007ff97b80b000 	C:\Windows\System32\WS2_32.dll
+0x00007ff979020000 - 0x00007ff97906b000 	C:\Windows\SYSTEM32\POWRPROF.dll
+0x00007ff965db0000 - 0x00007ff965dd7000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ff972110000 - 0x00007ff97211a000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ff978f80000 - 0x00007ff978f92000 	C:\Windows\SYSTEM32\UMPDC.dll
+0x00007ff977920000 - 0x00007ff977932000 	C:\Windows\SYSTEM32\kernel.appcore.dll
+0x00007ff94c920000 - 0x00007ff94c92a000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\jimage.dll
+0x00007ff976e40000 - 0x00007ff977041000 	C:\Windows\SYSTEM32\DBGHELP.DLL
+0x00007ff9655c0000 - 0x00007ff9655f4000 	C:\Windows\SYSTEM32\dbgcore.DLL
+0x00007ff9799a0000 - 0x00007ff979a22000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ff9405b0000 - 0x00007ff9405d5000 	C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\java.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin;C:\Windows\SYSTEM32;C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.19041.5915_none_60b4b9d171f9c7c7;C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin\server
+
+VM Arguments:
+jvm_args: -Xmx64m -Xms64m -Dorg.gradle.appname=gradlew 
+java_command: org.gradle.wrapper.GradleWrapperMain app:installDebug -PreactNativeDevServerPort=8081
+java_class_path (initial): C:\Users\ArsaLan\Downloads\mylapi\mylapi\cmepluse\riaVault\android\\gradle\wrapper\gradle-wrapper.jar
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 3                                         {product} {ergonomic}
+     uint ConcGCThreads                            = 1                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 4                                         {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 1048576                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 67108864                                  {product} {command line}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 67108864                                  {product} {command line}
+   size_t MinHeapDeltaBytes                        = 1048576                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 67108864                                  {product} {command line}
+    uintx NonNMethodCodeHeapSize                   = 5832780                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122912730                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122912730                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 67108864                               {manageable} {ergonomic}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\
+CLASSPATH=C:\Users\ArsaLan\Downloads\mylapi\mylapi\cmepluse\riaVault\android\\gradle\wrapper\gradle-wrapper.jar
+PATH=C:\Users\ArsaLan\Downloads\mylapi\mylapi\cmepluse\riaVault\node_modules\.bin;C:\Users\ArsaLan\Downloads\mylapi\mylapi\cmepluse\riaVault\node_modules\.bin;C:\Users\ArsaLan\Downloads\mylapi\mylapi\cmepluse\node_modules\.bin;C:\Users\ArsaLan\Downloads\mylapi\mylapi\node_modules\.bin;C:\Users\ArsaLan\Downloads\mylapi\node_modules\.bin;C:\Users\ArsaLan\Downloads\node_modules\.bin;C:\Users\ArsaLan\node_modules\.bin;C:\Users\node_modules\.bin;C:\node_modules\.bin;C:\Users\ArsaLan\AppData\Roaming\npm\node_modules\npm\node_modules\@npmcli\run-script\lib\node-gyp-bin;C:\Program Files\Python313\Scripts\;C:\Program Files\Python313\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files\Eclipse Adoptium\jdk-11.0.24.8-hotspot\bin;C:\Program Files\Microsoft\jdk-17.0.12.7-hotspot\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs\;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\PuTTY\;C:\src\flutter\bin;C:\Users\TMC - Flutter\AppData\Local\Android\Sdk\platform-tools;;c:\Users\ArsaLan\AppData\Local\Programs\cursor\resources\app\bin;c:\Users\ArsaLan\AppData\Local\Programs\Trae\bin;C:\Users\ArsaLan\AppData\Local\Microsoft\WindowsApps;C:\Users\ArsaLan\AppData\Local\Programs\Microsoft VS Cod
+USERNAME=ArsaLan
+LANG=en_US.UTF-8
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 142 Stepping 9, GenuineIntel
+TMP=C:\Users\ArsaLan\AppData\Local\Temp
+TEMP=C:\Users\ArsaLan\AppData\Local\Temp
+
+
+
+Periodic native trim disabled
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 10 , 64 bit Build 19041 (10.0.19041.5915)
+OS uptime: 0 days 5:38 hours
+Hyper-V role detected
+
+CPU: total 4 (initial active 4) (2 cores per cpu, 2 threads per core) family 6 model 142 stepping 9 microcode 0xf6, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, rtm, adx, fma, vzeroupper, clflush, clflushopt, hv
+Processor Information for the first 4 processors :
+  Max Mhz: 2701, Current Mhz: 2701, Mhz Limit: 2701
+
+Memory: 4k page, system-wide physical 12164M (821M free)
+TotalPageFile size 12164M (AvailPageFile size 8M)
+current process WorkingSet (physical memory assigned to process): 9M, peak: 9M
+current process commit charge ("private bytes"): 12M, peak: 13M
+
+vm_info: OpenJDK 64-Bit Server VM (17.0.12+7-LTS) for windows-amd64 JRE (17.0.12+7-LTS), built on Jul 16 2024 18:11:44 by "MicrosoftCorporation" with unknown MS VC++:1939
+
+END.

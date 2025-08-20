@@ -1,0 +1,20 @@
+node_modules
+# Git backups (never commit these)
+.git-back/
+.git-backup/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# React Native / Android
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/build/
+*.apk
+
+# iOS (if present)
+ios/Pods/
+*.xcuserdatad
