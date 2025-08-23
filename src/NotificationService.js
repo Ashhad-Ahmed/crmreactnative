@@ -1,133 +1,157 @@
-import PushNotification from 'react-native-push-notification';
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import { Platform } from 'react-native';
 
-class NotificationService {
-  constructor() {
-    this.isInitialized = false;
-  }
+import { Platform, PermissionsAndroid, Linking } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import notifee, {
+  AndroidImportance,
+  TriggerType,
+  RepeatFrequency,
+} from '@notifee/react-native';
+import { firestore } from './firebase';
 
-  initializeNotifications = () => {
-    try {
-      PushNotification.configure({
-        onRegister: function (token) {
-          console.log('TOKEN:', token);
-        },
-        onNotification: function (notification) {
-          console.log('NOTIFICATION RECEIVED:', notification);
-          if (Platform.OS === 'ios') {
-            notification.finish(PushNotificationIOS.FetchResult.NoData);
-          }
-        },
-        permissions: { alert: true, badge: true, sound: true },
-        popInitialNotification: true,
-        requestPermissions: Platform.OS === 'ios',
-        senderID: undefined,
-      });
-
-      if (Platform.OS === 'android') {
-        PushNotification.createChannel(
-          {
-            channelId: 'reminder-channel',
-            channelName: 'Appointment Reminders',
-            channelDescription: 'Channel for appointment reminder notifications',
-            playSound: true,
-            soundName: 'default',
-            importance: 4,
-            vibrate: true,
-          },
-          () => {},
-        );
-        PushNotification.createChannel(
-          {
-            channelId: 'immediate-channel',
-            channelName: 'Immediate Notifications',
-            channelDescription: 'Channel for immediate notifications',
-            playSound: true,
-            soundName: 'default',
-            importance: 5,
-            vibrate: true,
-          },
-          () => {},
-        );
-      }
-      this.isInitialized = true;
-    } catch (error) {
-      console.log('Error initializing notifications:', error);
-    }
-  };
-
-  requestPermissions = () => {
-    return new Promise((resolve) => {
-      try {
-        if (Platform.OS === 'ios') {
-          PushNotificationIOS.requestPermissions().then((permissions) => resolve(permissions));
-        } else {
-          resolve({ alert: true, badge: true, sound: true });
-        }
-      } catch {
-        resolve({ alert: false, badge: false, sound: false });
-      }
-    });
-  };
-
-  checkPermissions = () => {
-    return new Promise((resolve) => {
-      try {
-        if (Platform.OS === 'ios') {
-          PushNotificationIOS.checkPermissions((permissions) => resolve(permissions));
-        } else {
-          resolve({ alert: true, badge: true, sound: true });
-        }
-      } catch {
-        resolve({ alert: false, badge: false, sound: false });
-      }
-    });
-  };
-
-  scheduleNotification = (date, isDaily = false, title = 'Reminder', message = 'This is your scheduled reminder!') => {
-    let scheduledDate = new Date(date);
-    if (scheduledDate <= new Date()) throw new Error('Please select a future date and time');
-
-    const notificationConfig = {
-      id: isDaily ? 'daily-reminder' : `reminder-${Date.now()}`,
-      channelId: 'reminder-channel',
-      title,
-      message,
-      date: scheduledDate,
-      repeatType: isDaily ? 'day' : undefined,
-      allowWhileIdle: true,
-      importance: 'high',
-      priority: 'high',
-      playSound: true,
-      soundName: 'default',
-      largeIcon: 'ic_launcher',
-      smallIcon: 'ic_launcher',
-    };
-    PushNotification.localNotificationSchedule(notificationConfig);
-    return { scheduledDate, isDaily };
-  };
-
-  sendImmediateNotification = (title, message) => {
-    const config = {
-      id: `immediate-${Date.now()}`,
-      channelId: 'immediate-channel',
-      title,
-      message,
-      allowWhileIdle: true,
-      importance: 'high',
-      priority: 'high',
-      playSound: true,
-      soundName: 'default',
-      largeIcon: 'ic_launcher',
-      smallIcon: 'ic_launcher',
-    };
-    PushNotification.localNotification(config);
-  };
-
-  cancelAllNotifications = () => {
-    PushNotification.cancelAllLocalNotifications();
-  };
+// -- internal: high-importance channel (heads-up) --
+async function ensureChannel() {
+  const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'General',
+    importance: AndroidImportance.HIGH,
+  });
+  return channelId;
 }
 
-export default new NotificationService();
+
+async function ensureExactAlarmPermissionAndroid() {
+  if (Platform.OS === 'android' && Platform.Version >= 31) {
+   
+    try {
+      await Linking.openSettings();
+    } catch (e) {
+      console.log('Open settings failed:', e);
+    }
+  }
+}
+
+// -- init/permissions --
+async function initializeNotifications() {
+  await ensureChannel();
+  await ensureExactAlarmPermissionAndroid(); // exact timing ke liye settings prompt
+}
+
+async function requestPermissions() {
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    await PermissionsAndroid.request('android.permission.POST_NOTIFICATIONS');
+  }
+  const s = await messaging().requestPermission();
+  const ok =
+    s === messaging.AuthorizationStatus.AUTHORIZED ||
+    s === messaging.AuthorizationStatus.PROVISIONAL;
+  return { alert: ok, badge: ok, sound: ok };
+}
+
+async function checkPermissions() {
+  const st = await notifee.getNotificationSettings();
+  const ok =
+    st.authorizationStatus === notifee.AuthorizationStatus.AUTHORIZED ||
+    st.authorizationStatus === notifee.AuthorizationStatus.PROVISIONAL;
+  return { alert: ok, badge: ok, sound: ok };
+}
+
+// -- optional: FCM token save for server pushes --
+async function saveFcmTokenFor(uid) {
+  const token = await messaging().getToken();
+  await firestore().collection('users').doc(uid).set(
+    {
+      fcmTokens: firestore.FieldValue.arrayUnion(token),
+      updatedAt: firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+  return token;
+}
+
+// -- immediate tray notification --
+async function sendImmediateNotification(title, message, data = {}) {
+  const channelId = await ensureChannel();
+  await notifee.displayNotification({
+    title,
+    body: message,
+    data,
+    android: { channelId, pressAction: { id: 'default' } },
+  });
+}
+
+// -- one-time schedule at exact Date (offline ok) --
+async function scheduleNotification(date, _isDaily = false, title = 'Reminder', message = 'This is your scheduled reminder!', data = {}) {
+  if (date <= new Date()) throw new Error('Please select a future date and time');
+  const channelId = await ensureChannel();
+  await notifee.createTriggerNotification(
+    {
+      title,
+      body: message,
+      data,
+      android: {
+        channelId,
+        pressAction: { id: 'default' },
+      },
+    },
+    {
+      type: TriggerType.TIMESTAMP,
+      timestamp: date.getTime(),
+      alarmManager: true, // exact/alarm behavior
+    }
+  );
+  return { scheduledDate: date, isDaily: false };
+}
+
+// -- daily repeating based on time (hours/minutes) --
+async function scheduleDailyNotification(time, title = 'Daily Reminder', message = 'This is your daily reminder!', data = {}) {
+  const now = new Date();
+  const first = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    time.getHours(),
+    time.getMinutes(),
+    0,
+    0
+  );
+  if (first <= new Date()) first.setDate(first.getDate() + 1);
+
+  const channelId = await ensureChannel();
+  await notifee.createTriggerNotification(
+    {
+      title,
+      body: message,
+      data,
+      android: { channelId, pressAction: { id: 'default' } },
+    },
+    {
+      type: TriggerType.TIMESTAMP,
+      timestamp: first.getTime(),
+      repeatFrequency: RepeatFrequency.DAILY,
+      alarmManager: true,
+    }
+  );
+  return { scheduledDate: first, isDaily: true };
+}
+
+async function cancelAllNotifications() {
+  await notifee.cancelAllNotifications();
+}
+
+// quick smoke test
+async function testNotification() {
+  const t = new Date(Date.now() + 10 * 1000);
+  await scheduleNotification(t, false, 'Test Notification', 'This is a test notification!');
+}
+
+export default {
+  initializeNotifications,
+  requestPermissions,
+  checkPermissions,
+  saveFcmTokenFor,
+  sendImmediateNotification,
+  scheduleNotification,
+  scheduleDailyNotification,
+  cancelAllNotifications,
+  testNotification,
+};

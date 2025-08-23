@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  StatusBar,
-  Dimensions,
-  ScrollView,
+  View, Text, StyleSheet, TouchableOpacity, StatusBar,
+  Dimensions, ScrollView,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import NotificationService from '../src/NotificationService';
+import NotificationService from '../src/NotificationService'; 
 
 const { width } = Dimensions.get('window');
 
@@ -33,7 +28,6 @@ export default function Schedule({ route }) {
       'http://10.0.2.2:8000/getall',
       'http://192.168.1.100:8000/getall',
     ];
-
     const fetchData = async () => {
       for (const url of apiUrls) {
         try {
@@ -41,11 +35,11 @@ export default function Schedule({ route }) {
           if (response.ok) {
             const data = await response.json();
             setUsers(data.users || []);
-            const uniqueRoles = [...new Set((data.users || []).filter((u) => u.role !== 'admin').map((u) => u.role))];
+            const uniqueRoles = [...new Set((data.users || []).filter(u => u.role !== 'admin').map(u => u.role))];
             if (uniqueRoles.length > 0) setRoles(uniqueRoles);
             return;
           }
-        } catch {}
+        } catch (e) {}
       }
       setRoles(['doctor', 'nurse', 'therapist']);
       setUsers([
@@ -65,7 +59,8 @@ export default function Schedule({ route }) {
     }
     const roleLabel = selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
 
-    NotificationService.sendImmediateNotification(
+    // Immediate confirmation
+    await NotificationService.sendImmediateNotification(
       'Appointment Booked',
       `You booked ${roleLabel} for ${selectedTimeSlot}`,
     );
@@ -99,9 +94,7 @@ export default function Schedule({ route }) {
         'Appointment Reminder',
         `Your ${roleLabel} appointment starts now (${selectedTimeSlot.split('to')[0].trim()})`,
       );
-    } catch (e) {
-      console.log('schedule error', e);
-    }
+    } catch (e) {}
 
     alert(`You have booked an appointment of ${roleLabel} for ${selectedTimeSlot}`);
   };
@@ -124,7 +117,7 @@ export default function Schedule({ route }) {
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerLabel}>Select Professional Type:</Text>
               <View style={styles.picker}>
-                <Picker selectedValue={selectedRole} onValueChange={(val) => setSelectedRole(val)}>
+                <Picker selectedValue={selectedRole} onValueChange={val => setSelectedRole(val)}>
                   <Picker.Item label="Select a role" value="" />
                   {roles.map((role, idx) => (
                     <Picker.Item key={idx} label={role.charAt(0).toUpperCase() + role.slice(1)} value={role} />
@@ -135,7 +128,7 @@ export default function Schedule({ route }) {
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerLabel}>Select Time Slot:</Text>
               <View style={styles.picker}>
-                <Picker selectedValue={selectedTimeSlot} onValueChange={(val) => setSelectedTimeSlot(val)}>
+                <Picker selectedValue={selectedTimeSlot} onValueChange={val => setSelectedTimeSlot(val)}>
                   <Picker.Item label="Select a time slot" value="" />
                   {timeSlots.map((slot, idx) => (
                     <Picker.Item key={idx} label={slot} value={slot} />

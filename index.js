@@ -1,44 +1,39 @@
-import messaging from '@react-native-firebase/messaging';
-import PushNotification from 'react-native-push-notification';
+
 import {AppRegistry} from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import notifee from '@notifee/react-native';
 import App from './App';
 import {name as appName} from './app.json';
 
-// ✅ Create Notification Channel (match with Manifest meta-data)
-PushNotification.createChannel(
-  {
-    channelId: 'immediate-channel', // 👈 same as AndroidManifest.xml
-    channelName: 'Immediate Notifications',
-    importance: 4,
-    vibrate: true,
-  },
-  created => console.log(`createChannel returned '${created}'`)
-);
-
-// ✅ Ask permission and get FCM token
-messaging()
-  .requestPermission()
-  .then(authStatus => {
-    if (
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL
-    ) {
-      console.log('Permission granted:', authStatus);
-    }
-  });
-
-messaging()
-  .getToken()
-  .then(token => {
-    console.log('FCM Token:', token);
-    // TODO: send token to your backend
-  });
-
+// Foreground FCM -> tray
 messaging().onMessage(async remoteMessage => {
-  PushNotification.localNotification({
-    channelId: 'immediate-channel',
-    title: remoteMessage.notification?.title,
-    message: remoteMessage.notification?.body,
+  const n = remoteMessage?.notification;
+  const d = remoteMessage?.data || {};
+  const title = n?.title || d?.title || 'Notification';
+  const body  = n?.body  || d?.body  || 'You have a new message';
+
+  await notifee.createChannel({ id: 'default', name: 'General' });
+  await notifee.displayNotification({
+    title,
+    body,
+    android: { channelId: 'default', pressAction: { id: 'default' } },
+    data: d,
+  });
+});
+
+// Background/Quit FCM -> tray
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  const n = remoteMessage?.notification;
+  const d = remoteMessage?.data || {};
+  const title = n?.title || d?.title || 'Notification';
+  const body  = n?.body  || d?.body  || 'You have a new message';
+
+  await notifee.createChannel({ id: 'default', name: 'General' });
+  await notifee.displayNotification({
+    title,
+    body,
+    android: { channelId: 'default', pressAction: { id: 'default' } },
+    data: d,
   });
 });
 
