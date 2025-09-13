@@ -1,7 +1,7 @@
 // rsc/BottomTab/ChatBox.js
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, StyleSheet, Image, Alert } from 'react-native';
-import { ensureSignedIn, firestore } from '../../src/firebase';
+import { ensureSignedIn, firestore, sendChatNotification, auth } from '../../src/firebase';
 import firestoreModule from '@react-native-firebase/firestore';
 
 export default function ChatBox({ route }) {
@@ -13,11 +13,13 @@ export default function ChatBox({ route }) {
 
   useEffect(() => {
     let unsub;
+    let notificationUnsub;
     (async () => {
       try {
         const u = await ensureSignedIn();
         setMe({ _id: u.uid, name: u.displayName || 'Me', avatar: null });
 
+        // Listen to messages
         unsub = firestore()
           .collection('chats').doc(chatId)
           .collection('messages')
@@ -35,11 +37,43 @@ export default function ChatBox({ route }) {
             });
             setMessages(rows);
           });
+
+        // Listen to notifications for this user
+        notificationUnsub = firestore()
+          .collection('notifications')
+          .where('toUid', '==', u.uid)
+          .where('read', '==', false)
+          .orderBy('createdAt', 'desc')
+          .limit(10)
+          .onSnapshot(async (snap) => {
+            const notifications = snap.docs.map(d => d.data());
+            
+            // Show notifications and mark as read
+            for (const notification of notifications) {
+              if (notification.type === 'chat_message') {
+                // Import NotificationService dynamically
+                const NotificationService = (await import('../../src/NotificationService')).default;
+                await NotificationService.sendImmediateNotification(
+                  notification.title,
+                  notification.body,
+                  notification
+                );
+                
+                // Mark notification as read
+                await firestore().collection('notifications').doc(snap.docs.find(d => d.data() === notification)?.id).update({
+                  read: true
+                });
+              }
+            }
+          });
       } catch (e) {
         Alert.alert('Error', String(e?.message || e));
       }
     })();
-    return () => unsub && unsub();
+    return () => {
+      unsub && unsub();
+      notificationUnsub && notificationUnsub();
+    };
   }, [chatId]);
 
   const sendMessage = useCallback(async () => {
@@ -67,10 +101,18 @@ export default function ChatBox({ route }) {
       await batch.commit();
       setInput('');
       setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 50);
+
+      // Send notification to the other user using existing NotificationService
+      try {
+        await sendChatNotification(otherUser._id, me.name, text);
+      } catch (notificationError) {
+        console.log('Failed to send notification:', notificationError);
+        // Don't show error to user as message was sent successfully
+      }
     } catch (e) {
       Alert.alert('Send failed', String(e?.message || e));
     }
-  }, [chatId, input, me._id, me.name, me.avatar]);
+  }, [chatId, input, me._id, me.name, me.avatar, otherUser._id]);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">

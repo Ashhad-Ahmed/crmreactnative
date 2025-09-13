@@ -62,7 +62,7 @@ const Main = ({ navigation }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://98.84.137.230:8000/login", {
+      const response = await fetch("http://16.171.147.166:8000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

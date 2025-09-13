@@ -39,7 +39,7 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShadowVisible: false }}>
+      <Stack.Navigator initialRouteName="Signup" screenOptions={{ headerShadowVisible: false }}>
         {/* Tabs as main entry */}
         <Stack.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
 
